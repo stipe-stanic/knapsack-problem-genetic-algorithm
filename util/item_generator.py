@@ -18,10 +18,12 @@ def generate_items() -> List[Item]:
     items: List[Item] = []
 
     for i in range(NUMBER_OF_ITEMS):
-        name: str = chr(i + 65)
+        name: str = chr(i + 65)  # A B C D...
         weight: int = rd.randint(1, MAX_ITEM_WEIGHT)
         value: int = rd.randint(1, MAX_ITEM_VALUE)
 
         items.append(Item(name, weight, value))
+
+    print_items(items)
 
     return items

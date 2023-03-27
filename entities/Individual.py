@@ -1,5 +1,5 @@
 from typing import List
-from config import KNAPSACK_WEIGHT
+from config import KNAPSACK_CAPACITY
 from items import items
 
 
@@ -14,6 +14,9 @@ class Individual:
         return hash(str(self.bits))
 
     def fitness(self) -> float:
+        if len(items) != len(self.bits):
+            raise ValueError("Length of items and bits do not match")
+
         total_value = sum([
             bit * item.value
             for item, bit in zip(items, self.bits)
@@ -24,7 +27,7 @@ class Individual:
             for item, bit in zip(items, self.bits)
         ])
 
-        if total_weight <= KNAPSACK_WEIGHT:
+        if total_weight <= KNAPSACK_CAPACITY:
             return total_value
-
-        return 0
+        else:
+            return 0.0

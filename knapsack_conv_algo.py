@@ -1,11 +1,17 @@
 import time
 from config import *
 import random as rd
+from typing import List
 
-start_time = time.time()
 
-
-def knapsack(W, wt, val, n):
+def knapsack(W: int, val: List[int], wt: List[int], n: int):
+    """
+    :param W: knapsack capacity
+    :param val: items values
+    :param wt: items weights
+    :param n: number of items
+    :return: knapsack with maximum possible value
+    """
     K = [[0 for x in range(W + 1)] for x in range(n + 1)]
 
     # Build table K[][] in bottom up manner
@@ -23,18 +29,17 @@ def knapsack(W, wt, val, n):
     return K[n][W]
 
 
-# Driver code
-items_val = []
-items_weights = []
-for i in range(NUMBER_OF_ITEMS):
-    weight: int = rd.randint(1, MAX_ITEM_WEIGHT)
-    value: int = rd.randint(1, MAX_ITEM_VALUE)
+if __name__ == "__main__":
+    start_time = time.time()
 
-    items_val.append(value)
-    items_weights.append(weight)
+    items_val: List[int] = []
+    items_weights: List[int] = []
+    for i in range(NUMBER_OF_ITEMS):
+        weight: int = rd.randint(1, MAX_ITEM_WEIGHT)
+        value: int = rd.randint(1, MAX_ITEM_VALUE)
 
+        items_weights.append(weight)
+        items_val.append(value)
 
-W = KNAPSACK_WEIGHT
-n = NUMBER_OF_ITEMS
-print(knapsack(W, items_val, items_weights, n))
-print((time.time() - start_time) * 1000, "ms")
+    print(knapsack(KNAPSACK_CAPACITY, items_val, items_weights, NUMBER_OF_ITEMS))
+    print((time.time() - start_time) * 1000, "ms")

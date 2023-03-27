@@ -1,5 +1,4 @@
-from util.item_initializer import generate_items, print_items
+from util.item_generator import generate_items
 
 # items(randomized values)
 items = generate_items()
-print_items(items)
