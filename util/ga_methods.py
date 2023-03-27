@@ -4,7 +4,6 @@ from config import *
 from entities.Individual import *
 import random as rd
 from items import items
-from statistics import mean
 
 
 def generate_initial_population(count=POPULATION_SIZE) -> List[Individual]:
@@ -12,42 +11,41 @@ def generate_initial_population(count=POPULATION_SIZE) -> List[Individual]:
 
     # generate initial population
     while len(population) != count:
+        # Generate random bit values
         bits = [
             rd.choice([0, 1])
-            for _ in items
+            for _ in range(len(items))
         ]
         population.add(Individual(bits))
 
     return list(population)
 
 
-# k(4) - tournament selection
+# tournament selection
 def selection(population: List[Individual]) -> List[Individual]:
     parents: List[Individual] = []
 
     rd.shuffle(population)
 
-    # tournament between first and second
-    if population[0].fitness() > population[1].fitness():
-        parents.append(population[0])
-    else:
-        parents.append(population[1])
+    # tournament selection between all individuals
+    for i in range(len(population)):
+        j = rd.randint(0, len(population) - 1)
+        if population[i].fitness() > population[j].fitness():
+            parents.append(population[i])
+        else:
+            parents.append(population[j])
 
-    # tournament between third and fourth
-    if population[2].fitness() > population[3].fitness():
-        parents.append(population[2])
-    else:
-        parents.append(population[3])
-
-    return parents
+    # This returns a list of the two fittest individuals after performing tournament selection.
+    return sorted(parents, key=lambda x: x.fitness(), reverse=True)[:2]
 
 
-# one-point crossover
+# random one-point crossover
 def crossover(parents: List[Individual]) -> List[Individual]:
     N = NUMBER_OF_ITEMS
+    crossover_point = rd.randint(1, N-1)
 
-    child1 = parents[0].bits[:N // 2] + parents[1].bits[N // 2:]
-    child2 = parents[0].bits[N // 2:] + parents[1].bits[:N // 2]
+    child1 = parents[0].bits[:crossover_point] + parents[1].bits[crossover_point:]
+    child2 = parents[1].bits[:crossover_point] + parents[0].bits[crossover_point:]
 
     return [Individual(child1), Individual(child2)]
 
@@ -65,13 +63,17 @@ def mutate(individuals: List[Individual]) -> None:
 
 def next_generation(population: List[Individual]) -> List[Individual]:
     next_gen = []
+
+    # Elitism: keep the best individual from the previous generation
+    best_individual = max(population, key=lambda x: x.fitness())
+    next_gen.append(best_individual)
+
     while len(next_gen) < len(population):
         children = []
 
         # we run selection and get parents
         parents = selection(population)
 
-        # elitism
         if rd.random() < REPRODUCTION_RATE:
             children = parents
         else:
@@ -80,8 +82,8 @@ def next_generation(population: List[Individual]) -> List[Individual]:
                 children = crossover(parents)
 
             # mutation
-            ##if rd.random() < MUTATION_RATE:
-                ##mutate(children)
+            if rd.random() < MUTATION_RATE:
+                mutate(children)
 
         next_gen.extend(children)
 
@@ -92,10 +94,11 @@ def print_generation(population: List[Individual]):
     for individual in population:
         print(individual.bits, individual.fitness())
     print()
-    print("Average fitness", sum([x.fitness() for x in population]) / len(population))
+    print("Average fitness", average_fitness(population))
     print("-" * 32)
 
 
+# Returns the average fitness for the current population
 def average_fitness(population: List[Individual]) -> float:
     return sum([i.fitness() for i in population]) / len(population)
 
@@ -103,29 +106,26 @@ def average_fitness(population: List[Individual]) -> float:
 def solve_knapsack() -> Tuple[Individual, int]:
     population: List[Individual] = generate_initial_population()
 
-    avg_fitness = []
+    best_fitness = float('-inf')
     num_of_evolutions = 0
+    generations_without_improvement = 0
 
     for _ in range(MAX_NUMBER_OF_GENERATIONS):
-        if len(avg_fitness) > TERMINATION_CONDITION:
-            # if (average_fitness(population)) > 500:
-            #     break
-            curr_pop_fitness = average_fitness(population)
-            mean_pop = mean(avg_fitness[-TERMINATION_CONDITION:])
+        # Terminate if there has been no improvement in the best fitness for a given number of generations
+        if generations_without_improvement > TERMINATION_CONDITION:
+            break
 
-            if mean_pop == curr_pop_fitness:
-                break
-            else:
-                avg_fitness.append(curr_pop_fitness)
-                population = next_generation(population)
-                num_of_evolutions += 1
+        population = next_generation(population)
+        num_of_evolutions += 1
+
+        # Check for improvement in the best fitness
+        population = sorted(population, key=lambda i: i.fitness(), reverse=True)
+        current_best_fitness = population[0].fitness()
+        if current_best_fitness > best_fitness:
+            best_fitness = current_best_fitness
+            generations_without_improvement = 0
         else:
-            if (average_fitness(population)) > 500:
-                break
-            avg_fitness.append(average_fitness(population))
+            generations_without_improvement += 1
 
-            population = next_generation(population)
-            num_of_evolutions += 1
-
-    population = sorted(population, key=lambda i: i.fitness(), reverse=True)
+    # Returns the fittest individual
     return population[0], num_of_evolutions
