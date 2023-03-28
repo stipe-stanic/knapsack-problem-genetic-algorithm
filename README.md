@@ -16,4 +16,4 @@
 
 - After an input size of 4 million, the genetic algorithm takes less time to execute and find the optimal solution.
 
-<img alt="Comparison of execution times of solving knapsack problem using a conventional algorithm and genetic algorithm" height=50% src="/plots/conv_vs_genetic.png" width=50%/>
+<img alt="Comparison of execution times of solving knapsack problem using a conventional algorithm and genetic algorithm" height=70% src="/plots/conv_vs_genetic.png" width=70%/>
