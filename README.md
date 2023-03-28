@@ -1,9 +1,9 @@
 ## Description
-
-- Genes can have a value of 0 or 1. 1 represents the item inside the knapsack, while 0 represents otherwise.
-- Chromosome represents one solution to the problem and holds N number of genes.
-- Population is a set of solutions of size M.
-- Fitness function calculates the fitness value of every solution(chromosome) based on the value and weight of each item.
+Solving knapsack problem in sublinear time complexity while converging to the optimal solution. Comparison of time complexity between genetic algorithm and conventional algorithm.
+ - Genes can have a value of 0 or 1. 1 represents the item inside the knapsack, while 0 represents otherwise.
+ - Chromosome represents one solution to the problem and holds N number of genes.
+ - Population is a set of solutions of size M.
+ - Fitness function calculates the fitness value of every solution(chromosome) based on the value and weight of each item.
 
 ## Genetic algorithm methods
 
